@@ -1,33 +1,53 @@
-# app_functions.py
 import subprocess
 import threading
+import os
+from datetime import datetime
 
-receiver_process = None
+RECEIVER_PROCESS = None
+
+def log_activity(message):
+    with open('activity.log', 'a') as f:
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        f.write(f"[{timestamp}] {message}\n")
 
 def start_receiver():
-    global receiver_process
-    if receiver_process is None or receiver_process.poll() is not None:
-        receiver_process = subprocess.Popen(['python', 'receiver.py'])
+    global RECEIVER_PROCESS
+    if RECEIVER_PROCESS is None or RECEIVER_PROCESS.poll() is not None:
+        RECEIVER_PROCESS = subprocess.Popen(['python', 'receiver.py'])
+        log_activity("Receiver started")
         return True
     return False
 
 def stop_receiver():
-    global receiver_process
-    if receiver_process and receiver_process.poll() is None:
-        receiver_process.terminate()
-        receiver_process = None
+    global RECEIVER_PROCESS
+    if RECEIVER_PROCESS and RECEIVER_PROCESS.poll() is None:
+        RECEIVER_PROCESS.terminate()
+        RECEIVER_PROCESS = None
+        log_activity("Receiver stopped")
         return True
     return False
 
-def send_files(ip, filepaths):
-    # filepaths: list of file paths
-    # For each file, call send.py with the IP and file path
+def send_files(ip, file_paths):
     results = []
-    for path in filepaths:
+    for path in file_paths:
         try:
-            result = subprocess.run(['python', 'send.py'], input=f"{ip}\n{path}\n", text=True, capture_output=True, timeout=60)
-            results.append({'file': path, 'output': result.stdout, 'error': result.stderr})
+            result = subprocess.run(
+                ['python', 'sender.py', ip, path],
+                capture_output=True,
+                text=True,
+                timeout=60
+            )
+            results.append({
+                'file': os.path.basename(path),
+                'output': result.stdout,
+                'error': result.stderr
+            })
+            log_activity(f"Sent {os.path.basename(path)} to {ip}")
         except Exception as e:
-            results.append({'file': path, 'output': '', 'error': str(e)})
+            results.append({
+                'file': os.path.basename(path),
+                'output': '',
+                'error': str(e)
+            })
+            log_activity(f"Failed to send {os.path.basename(path)}: {str(e)}")
     return results
-

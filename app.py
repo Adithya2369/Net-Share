@@ -1,53 +1,96 @@
-# app.py
 from flask import Flask, render_template, request, jsonify
+import os
+import re
 import app_functions
 
 app = Flask(__name__)
+RECEIVED_FILES_FOLDER = 'downloads'
+ACTIVITY_LOG_FILE = 'activity.log'
+
+# Create required directories on startup
+if not os.path.exists(RECEIVED_FILES_FOLDER):
+    os.makedirs(RECEIVED_FILES_FOLDER)
+if not os.path.exists(ACTIVITY_LOG_FILE):
+    open(ACTIVITY_LOG_FILE, 'w').close()
+
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
+
 @app.route('/send')
 def send_page():
     return render_template('send.html')
+
 
 @app.route('/receive')
 def receive_page():
     return render_template('receive.html')
 
+
 @app.route('/api/start_receiver', methods=['POST'])
 def api_start_receiver():
-    started = app_functions.start_receiver()
-    return jsonify({'status': 'listening' if started else 'already_listening'})
+    success = app_functions.start_receiver()
+    return jsonify({'status': 'listening' if success else 'already_running'})
+
 
 @app.route('/api/stop_receiver', methods=['POST'])
 def api_stop_receiver():
-    stopped = app_functions.stop_receiver()
-    return jsonify({'status': 'stopped' if stopped else 'not_running'})
+    success = app_functions.stop_receiver()
+    return jsonify({'status': 'stopped' if success else 'not_running'})
+
 
 @app.route('/api/send_files', methods=['POST'])
 def api_send_files():
     ip = request.form.get('ip')
-    files = request.form.getlist('files[]')
-    results = app_functions.send_files(ip, files)
+    files = request.files.getlist('files[]')
+
+    # Save uploaded files temporarily
+    temp_files = []
+    for file in files:
+        temp_path = os.path.join('temp_uploads', file.filename)
+        file.save(temp_path)
+        temp_files.append(temp_path)
+
+    results = app_functions.send_files(ip, temp_files)
+
+    # Cleanup temp files
+    for f in temp_files:
+        os.remove(f)
+
     return jsonify(results)
 
+
 @app.route('/api/received_files')
-def received_files():
-    # Example: return [{'name': 'example.txt'}, ...]
-    # You should implement logic to read received files from your storage
-    return jsonify([{'name': f} for f in os.listdir(RECEIVED_FILES_FOLDER)])
+def api_received_files():
+    files = []
+    if os.path.exists(RECEIVED_FILES_FOLDER):
+        files = [{'name': f} for f in os.listdir(RECEIVED_FILES_FOLDER)
+                 if os.path.isfile(os.path.join(RECEIVED_FILES_FOLDER, f))]
+    return jsonify(files)
+
+
+@app.route('/api/activity_log')
+def api_activity_log():
+    logs = []
+    if os.path.exists(ACTIVITY_LOG_FILE):
+        with open(ACTIVITY_LOG_FILE, 'r') as f:
+            for line in f:
+                match = re.match(r'\[(.*?)\]\s*(.*)', line.strip())
+                if match:
+                    logs.append({'time': match.group(1), 'msg': match.group(2)})
+    return jsonify(logs)
+
+
 
 @app.route('/api/clear_activity_log', methods=['POST'])
-def clear_activity_log():
-    # Example: If you store log in a file
-    with open('activity.log', 'w') as f:
-        f.write('')
-    # Or if you use a global list, just clear it
-    # activity_log.clear()
-    return jsonify({"status": "cleared"})
+def api_clear_activity_log():
+    open(ACTIVITY_LOG_FILE, 'w').close()
+    return jsonify({'status': 'cleared'})
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    if not os.path.exists('temp_uploads'):
+        os.makedirs('temp_uploads')
+    app.run(host='0.0.0.0', port=5000, debug=True)

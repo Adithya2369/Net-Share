@@ -236,8 +236,8 @@
                     activityLog.innerHTML = '<div class="activity-log-entry"><i class="far fa-clock"></i> No activity yet.</div>';
                 } else {
                     logs.forEach(log => {
-                        activityLog.innerHTML += `<div class="activity-log-entry"><i class="far fa-clock"></i> ${log.time} ${log.msg}</div>`;
-                    });
+                    activityLog.innerHTML += `<div class="activity-log-entry"><i class="far fa-clock"></i> ${log.time} ${log.msg}</div>`;
+                });
                 }
                 activityLog.scrollTop = activityLog.scrollHeight;
             });
