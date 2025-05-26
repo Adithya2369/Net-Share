@@ -109,4 +109,10 @@ NetShare/
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE.md file for details. (Note: A `LICENSE.md` file should be created separately with the standard MIT License text.)
+Copyright (c) [2025] [T. Adithya Reddy]
+
+Permission is granted to use, copy, and distribute this software for any purpose, provided that the original author is credited.
+
+Modification, alteration, or derivative works based on this software are NOT permitted without explicit written permission from the author.
+
+No warranty is provided. Use at your own risk.
