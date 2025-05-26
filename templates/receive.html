@@ -278,14 +278,11 @@
             fetch('/api/stop_receiver', {method: 'POST'})
                 .then(data => {
                     listening = false;
-                    statusBox.innerHTML = '<i class="fas fa-wifi-slash"></i><span id="status-text">&nbsp;Not listening. Press Start to begin.</span>';
+                    const iconElement = statusBox.querySelector('i');
+                    iconElement.classList.remove('fa-wifi');
+                    iconElement.classList.add('fa-wifi-slash');
+                    statusText.textContent = '\u00a0Not listening. Press Start to begin.';
                     toggleBtn.innerHTML = '<i class="fas fa-play"></i>Start Listening';
-                    addActivityLog('Stopped listening for files.');
-                    fetchActivityLog();
-                });
-            fetch('/api/stop_receiver', {method: 'POST'})
-                .then(response => response.json())
-                .then(data => {
                 });
         }
     });
@@ -306,6 +303,30 @@
     // Initial load
     fetchReceivedFiles();
     fetchActivityLog();
+
+    // Initial status check
+    fetch('/api/receiver_status')
+        .then(response => response.json())
+        .then(data => {
+            listening = data.status === 'listening';
+            const iconElement = statusBox.querySelector('i');
+            if (listening) {
+                iconElement.classList.remove('fa-wifi-slash');
+                iconElement.classList.add('fa-wifi');
+                statusText.textContent = '\u00a0Listening for files...';
+                toggleBtn.innerHTML = '<i class="fas fa-stop"></i>Stop Listening';
+            } else {
+                iconElement.classList.remove('fa-wifi');
+                iconElement.classList.add('fa-wifi-slash');
+                statusText.textContent = '\u00a0Not listening. Press Start to begin.';
+                toggleBtn.innerHTML = '<i class="fas fa-play"></i>Start Listening';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching receiver status:', error);
+            // Optionally update the UI to indicate an error
+        });
+
     </script>
 </body>
 </html>

@@ -41,6 +41,13 @@ def api_stop_receiver():
     return jsonify({'status': 'stopped' if success else 'not_running'})
 
 
+@app.route('/api/receiver_status')
+def api_receiver_status():
+    status = 'listening' if app_functions.RECEIVER_PROCESS and app_functions.RECEIVER_PROCESS.poll() is None else 'not_running'
+ return jsonify({'status': status})
+
+
+
 @app.route('/api/send_files', methods=['POST'])
 def api_send_files():
     ip = request.form.get('ip')
