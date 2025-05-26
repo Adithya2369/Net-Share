@@ -3,12 +3,10 @@ import os
 from threading import Thread
 from datetime import datetime
 
-
 def log_activity(message):
     with open('activity.log', 'a') as f:
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         f.write(f"[{timestamp}] {message}\n")
-
 
 def recv_all(sock, n):
     data = bytearray()
@@ -18,7 +16,6 @@ def recv_all(sock, n):
             return None
         data.extend(packet)
     return data
-
 
 def handle_client(client_socket, addr):
     try:
@@ -32,10 +29,10 @@ def handle_client(client_socket, addr):
         filename_size_bytes = recv_all(client_socket, 4)
         if not filename_size_bytes:
             return
+        filename_size = int.from_bytes(filename_size_bytes, 'big')  # 🔧 FIXED: filename_size was missing
 
+        file_name = recv_all(client_socket, filename_size).decode('utf-8')  # 🔧 FIXED: moved before print
         print(f"[*] Receiving file: {file_name} ({file_size} bytes)")
-        # Receive filename
-        file_name = recv_all(client_socket, filename_size).decode('utf-8')
 
         # Create downloads directory
         os.makedirs('downloads', exist_ok=True)
@@ -52,8 +49,6 @@ def handle_client(client_socket, addr):
                 received_size += len(data)
 
         print(f"[*] Successfully received {file_name}")
-        # Optional: Add a check here to see if received_size == file_size
-
         log_activity(f"Received file: {file_name}")
         print(f"File {file_name} received from {addr[0]}")
 
@@ -62,7 +57,6 @@ def handle_client(client_socket, addr):
         print(f"Error: {e}")
     finally:
         client_socket.close()
-
 
 def start_server():
     host = '0.0.0.0'
@@ -83,7 +77,6 @@ def start_server():
         print("\n[*] Shutting down receiver server")
     finally:
         server.close()
-
 
 if __name__ == "__main__":
     start_server()
