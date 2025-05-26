@@ -42,5 +42,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     target_ip = sys.argv[1]
+    print(target_ip)
     file_path = sys.argv[2]
+    print(file_path)
     send_file(target_ip, file_path)
