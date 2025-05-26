@@ -266,20 +266,26 @@
                 .then(response => response.json())
                 .then(data => {
                     listening = true;
-                    statusBox.innerHTML = '<i class="fas fa-wifi"></i><span id="status-text">&nbsp;Listening for files...</span>';
+                    const iconElement = statusBox.querySelector('i');
+                    iconElement.classList.remove('fa-wifi-slash');
+                    iconElement.classList.add('fa-wifi');
+                    statusText.textContent = '\u00a0Listening for files...';
                     toggleBtn.innerHTML = '<i class="fas fa-stop"></i>Stop Listening';
                     addActivityLog('Started listening for files.');
                     fetchActivityLog();
                 });
         } else {
             fetch('/api/stop_receiver', {method: 'POST'})
-                .then(response => response.json())
                 .then(data => {
                     listening = false;
                     statusBox.innerHTML = '<i class="fas fa-wifi-slash"></i><span id="status-text">&nbsp;Not listening. Press Start to begin.</span>';
                     toggleBtn.innerHTML = '<i class="fas fa-play"></i>Start Listening';
                     addActivityLog('Stopped listening for files.');
                     fetchActivityLog();
+                });
+            fetch('/api/stop_receiver', {method: 'POST'})
+                .then(response => response.json())
+                .then(data => {
                 });
         }
     });
