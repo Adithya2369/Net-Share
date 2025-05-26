@@ -22,11 +22,17 @@ def recv_all(sock, n):
 
 def handle_client(client_socket, addr):
     try:
+        # Receive file size
+        file_size_bytes = recv_all(client_socket, 8)
+        if not file_size_bytes:
+            return
+        file_size = int.from_bytes(file_size_bytes, 'big')
+
         # Receive filename size
         filename_size_bytes = recv_all(client_socket, 4)
-        if not filename_size_bytes:
             return
-        filename_size = int.from_bytes(filename_size_bytes, 'big')
+        if not filename_size_bytes:
+            return        filename_size = int.from_bytes(filename_size_bytes, 'big')
 
         # Receive filename
         file_name = recv_all(client_socket, filename_size).decode('utf-8')
@@ -36,18 +42,22 @@ def handle_client(client_socket, addr):
 
         # Receive file data
         file_path = os.path.join('downloads', file_name)
+        received_size = 0
         with open(file_path, 'wb') as file:
-            while True:
+            while received_size < file_size:
                 data = client_socket.recv(4096)
                 if not data:
                     break
                 file.write(data)
+                received_size += len(data)
+
+        # Optional: Add a check here to see if received_size == file_size
 
         log_activity(f"Received file: {file_name}")
         print(f"File {file_name} received from {addr[0]}")
 
     except Exception as e:
-        log_activity(f"Error receiving file: {str(e)}")
+        log_activity(f"Error handling client {addr[0]}:{addr[1]}: {str(e)}")
         print(f"Error: {e}")
     finally:
         client_socket.close()

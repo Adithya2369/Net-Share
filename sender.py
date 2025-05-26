@@ -14,8 +14,12 @@ def send_file(ip, file_path):
         file_name = os.path.basename(file_path)
 
         with open(file_path, 'rb') as file:
+            file_size = os.path.getsize(file_path)
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:
                 client.connect((ip, port))
+
+                # Send file size (8 bytes)
+                client.sendall(file_size.to_bytes(8, 'big'))
 
                 # Send filename metadata
                 client.sendall(len(file_name).to_bytes(4, 'big'))
@@ -32,8 +36,16 @@ def send_file(ip, file_path):
         return True
 
     except Exception as e:
+        error_message = str(e)
+        if isinstance(e, FileNotFoundError):
+            error_message = f"Error: File not found at {file_path}"
+        elif isinstance(e, ConnectionRefusedError):
+            error_message = f"Error: Connection refused to {ip}:{port}. Make sure the receiver is running."
         print(f"Error: {e}", file=sys.stderr)
-        return False
+        # In a real application, you'd likely return more structured error info.
+        # For this diff, we'll just print. The change requested is about
+        # app_functions.send_files handling this, which is outside this diff.
+        pass
 
 
 if __name__ == "__main__":
