@@ -33,6 +33,7 @@ def handle_client(client_socket, addr):
         if not filename_size_bytes:
             return
 
+        print(f"[*] Receiving file: {file_name} ({file_size} bytes)")
         # Receive filename
         file_name = recv_all(client_socket, filename_size).decode('utf-8')
 
@@ -50,6 +51,7 @@ def handle_client(client_socket, addr):
                 file.write(data)
                 received_size += len(data)
 
+        print(f"[*] Successfully received {file_name}")
         # Optional: Add a check here to see if received_size == file_size
 
         log_activity(f"Received file: {file_name}")
