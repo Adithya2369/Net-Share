@@ -5,13 +5,18 @@ import sys
 
 def send_file(ip, file_path):
     port = 5001
-    client = None
+
+    print(f"send_file called with IP: {ip}, File Path: {file_path}")
 
     try:
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"File {file_path} not found")
 
         file_name = os.path.basename(file_path)
+        print(f"Opening file: {file_name}")
+        file_size = os.path.getsize(file_path)
+        print(f"File size: {file_size} bytes")
+
 
         with open(file_path, 'rb') as file:
             file_size = os.path.getsize(file_path)
@@ -25,6 +30,7 @@ def send_file(ip, file_path):
                 client.sendall(len(file_name).to_bytes(4, 'big'))
                 client.sendall(file_name.encode('utf-8'))
 
+                print(f"Sending file data for: {file_name}")
                 # Send file data
                 while True:
                     data = file.read(4096)
