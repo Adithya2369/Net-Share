@@ -30,6 +30,7 @@ def stop_receiver():
 def send_files(ip, file_paths):
     print(f"Starting send_files function for IP: {ip}")
     results = []
+    print(f"File paths: {file_paths}")
     for path in file_paths:
         print(f"Processing file: {path}")
         try:

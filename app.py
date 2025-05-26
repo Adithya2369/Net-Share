@@ -52,7 +52,7 @@ def api_receiver_status():
 def api_send_files():
     ip = request.form.get('ip')
     files = request.files.getlist('files[]')
-
+    print(f"Received files for IP: {ip}")
     # Save uploaded files temporarily
     temp_files = []
     for file in files:
@@ -63,8 +63,8 @@ def api_send_files():
     results = app_functions.send_files(ip, temp_files)
 
     # Cleanup temp files
-    for f in temp_files:
-        os.remove(f)
+    # for f in temp_files:
+    #     os.remove(f)
 
     return jsonify(results)
 
