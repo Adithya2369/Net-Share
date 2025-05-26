@@ -61,7 +61,7 @@ def api_send_files():
     #     temp_files.append(temp_path)
 
     # **TEMPORARY CHANGE FOR TESTING:** Add placeholder file paths
-    temp_files = ['temp_uploads/test_placeholder1.txt', 'temp_uploads/test_placeholder2.txt', 'temp_uploads/test_placeholder3.txt']
+    temp_files = ['temp_uploads/LAB_practice.pdf', 'temp_uploads/LAB_practice - Copy.pdf']
     print(f"File paths (for testing): {temp_files}")
 
     results = app_functions.send_files(ip, temp_files)
