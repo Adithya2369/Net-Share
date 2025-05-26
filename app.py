@@ -55,10 +55,14 @@ def api_send_files():
     print(f"Received files for IP: {ip}")
     # Save uploaded files temporarily
     temp_files = []
-    for file in files:
-        temp_path = os.path.join('temp_uploads', file.filename)
-        file.save(temp_path)
-        temp_files.append(temp_path)
+    # for file in files:
+    #     temp_path = os.path.join('temp_uploads', file.filename)
+    #     file.save(temp_path)
+    #     temp_files.append(temp_path)
+
+    # **TEMPORARY CHANGE FOR TESTING:** Add placeholder file paths
+    temp_files = ['temp_uploads/test_placeholder1.txt', 'temp_uploads/test_placeholder2.txt', 'temp_uploads/test_placeholder3.txt']
+    print(f"File paths (for testing): {temp_files}")
 
     results = app_functions.send_files(ip, temp_files)
 
@@ -67,6 +71,7 @@ def api_send_files():
     #     os.remove(f)
 
     return jsonify(results)
+
 
 
 @app.route('/api/received_files')
