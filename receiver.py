@@ -30,9 +30,8 @@ def handle_client(client_socket, addr):
 
         # Receive filename size
         filename_size_bytes = recv_all(client_socket, 4)
-            return
         if not filename_size_bytes:
-            return        filename_size = int.from_bytes(filename_size_bytes, 'big')
+            return
 
         # Receive filename
         file_name = recv_all(client_socket, filename_size).decode('utf-8')
