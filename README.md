@@ -109,7 +109,7 @@ NetShare/
 
 ## License
 
-Copyright (c) [2025] [T. Adithya Reddy]
+Copyright (c) 2025 T. Adithya Reddy
 
 Permission is granted to use, copy, and distribute this software for any purpose, provided that the original author is credited.
 
