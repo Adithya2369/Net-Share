@@ -266,8 +266,8 @@
                 .then(response => response.json())
                 .then(data => {
                     listening = true;
-                    statusBox.innerHTML = '<i class="fas fa-microphone"></i><span id="status-text">&nbsp;Listening for files...</span>';
-                    toggleBtn.innerHTML = '<i class="fas fa-stop-circle"></i>Stop Listening';
+                    statusBox.innerHTML = '<i class="fas fa-wifi"></i><span id="status-text">&nbsp;Listening for files...</span>';
+                    toggleBtn.innerHTML = '<i class="fas fa-stop"></i>Stop Listening';
                     addActivityLog('Started listening for files.');
                     fetchActivityLog();
                 });
@@ -276,8 +276,8 @@
                 .then(response => response.json())
                 .then(data => {
                     listening = false;
-                    statusBox.innerHTML = '<i class="fas fa-microphone-slash"></i><span id="status-text">&nbsp;Not listening. Press Start to begin.</span>';
-                    toggleBtn.innerHTML = '<i class="fas fa-play-circle"></i>Start Listening';
+                    statusBox.innerHTML = '<i class="fas fa-wifi-slash"></i><span id="status-text">&nbsp;Not listening. Press Start to begin.</span>';
+                    toggleBtn.innerHTML = '<i class="fas fa-play"></i>Start Listening';
                     addActivityLog('Stopped listening for files.');
                     fetchActivityLog();
                 });
