@@ -32,7 +32,7 @@ These instructions will help you get a copy of the project up and running on you
 1.  **Clone the repository:**
 ```
 bash
-    git clone <repository_url>
+    git clone https://github.com/Adithya2369/Net-Share
     cd NetShare
     
 ```
@@ -85,6 +85,7 @@ NetShare/
 ├── app_functions.py
 ├── sender.py
 ├── receiver.py
+├── activity.log
 ├── templates/
 │   ├── index.html
 │   ├── send.html
