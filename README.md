@@ -33,7 +33,6 @@ These instructions will help you get a copy of the project up and running on you
 ```
 bash
     git clone https://github.com/Adithya2369/Net-Share
-    cd NetShare
     
 ```
 2.  **Install dependencies:**
