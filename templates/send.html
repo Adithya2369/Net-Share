@@ -141,28 +141,7 @@
             margin-right: 10px;
             font-size: 20px;
         }
-        .progress-bar-container {
-            width: 100%;
-            background: #e3efff;
-            border-radius: 7px;
-            margin-top: 18px;
-            height: 18px;
-            overflow: hidden;
-            display: none;
-        }
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background: #3d7edb;
-            transition: width 0.2s;
-        }
-        .progress-text {
-            text-align: right;
-            font-size: 14px;
-            color: #3d7edb;
-            margin-top: 6px;
-            margin-bottom: 0;
-        }
+        /* Progress bar CSS removed */
     </style>
 </head>
 <body>
@@ -184,10 +163,6 @@
                 <input type="text" id="receiver-ip" placeholder="e.g., 192.168.1.100">
             </div>
             <button id="send-button" class="send-btn"><i class="fas fa-paper-plane"></i>Send Files</button>
-            <div class="progress-bar-container" id="progress-bar-container">
-                <div class="progress-bar" id="progress-bar"></div>
-            </div>
-            <div class="progress-text" id="progress-text"></div>
             <div id="result"></div>
         </div>
     </div>
@@ -209,22 +184,15 @@
             }
         });
 
-        // Send files with progress
         document.getElementById('send-button').addEventListener('click', () => {
             const files = fileInput.files;
             const receiverIP = document.getElementById('receiver-ip').value;
-            const progressBarContainer = document.getElementById('progress-bar-container');
-            const progressBar = document.getElementById('progress-bar');
-            const progressText = document.getElementById('progress-text');
             const resultDiv = document.getElementById('result');
             resultDiv.innerHTML = '';
             if (!receiverIP || files.length === 0) {
                 alert("Please enter receiver IP and select files.");
                 return;
             }
-            progressBarContainer.style.display = 'block';
-            progressBar.style.width = '0%';
-            progressText.textContent = '0%';
 
             // Prepare FormData
             const formData = new FormData();
@@ -233,21 +201,11 @@
                 formData.append('files', files[i]);
             }
 
-            // Use XMLHttpRequest for progress
+            // Use XMLHttpRequest for file upload
             const xhr = new XMLHttpRequest();
             xhr.open('POST', '/api/send_files', true);
 
-            xhr.upload.addEventListener('progress', (e) => {
-                if (e.lengthComputable) {
-                    const percent = Math.round((e.loaded / e.total) * 100);
-                    progressBar.style.width = percent + '%';
-                    progressText.textContent = percent + '%';
-                }
-            });
-
             xhr.onload = function() {
-                progressBar.style.width = '100%';
-                progressText.textContent = '100%';
                 if (xhr.status === 200) {
                     let data;
                     try {
@@ -263,9 +221,7 @@
                     resultDiv.innerHTML = "<p style='color:red;'>Upload failed. Please try again.</p>";
                 }
             };
-
             xhr.onerror = function() {
-                progressBarContainer.style.display = 'none';
                 resultDiv.innerHTML = "<p style='color:red;'>Network error. Please try again.</p>";
             };
 

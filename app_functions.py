@@ -34,8 +34,9 @@ def send_files(ip, file_paths):
     for path in file_paths:
         print(f"Processing file: {path}")
         try:
+            print("trying to send file")
             result = subprocess.run(
-                ['python', 'sender.py', ip, path],
+                ['python3', 'sender.py', ip, path],
                 capture_output=True,
                 text=True,
                 timeout=60
@@ -45,12 +46,12 @@ def send_files(ip, file_paths):
                 'output': result.stdout,
                 'error': result.stderr
             })
-            log_activity(f"Sent {os.path.basename(path)} to {ip}")
+            # log_activity(f"Sent {os.path.basename(path)} to {ip}")
         except Exception as e:
             results.append({
                 'file': os.path.basename(path),
                 'output': '',
                 'error': str(e)
             })
-            log_activity(f"Failed to send {os.path.basename(path)}: {str(e)}")
+            # log_activity(f"Failed to send {os.path.basename(path)}: {str(e)}")
     return results

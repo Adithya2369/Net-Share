@@ -49,80 +49,90 @@ def api_receiver_status():
 
 
 
+@app.route('/api/send_files', methods=['POST'])
+def api_send_files():
+    ip = request.form.get('ip')
+    files = request.files.getlist('files')
+    print(f"Received files for IP: {ip}")
+    print(f"Received files: {files}")
+    # Save uploaded files temporarily
+    temp_files = []
+    for file in files:
+        temp_path = os.path.join('temp_uploads', file.filename)
+        file.save(temp_path)
+        temp_files.append(temp_path)
+
+    # **TEMPORARY CHANGE FOR TESTING:** Add placeholder file paths
+    # temp_files = ['temp_uploads/LAB_practice.pdf', 'temp_uploads/LAB_practice - Copy.pdf']
+    # print(f"File paths (for testing): {temp_files}")
+
+    results = app_functions.send_files(ip, temp_files)
+
+    # Cleanup temp files
+    for f in temp_files:
+        os.remove(f)
+    return jsonify(results)
+
+
 # @app.route('/api/send_files', methods=['POST'])
 # def api_send_files():
 #     ip = request.form.get('ip')
-#     files = request.files.getlist('files[]')
+#     if not ip:
+#         return jsonify([{'error': 'No IP provided'}]), 400
+#
+#     # The key must match what your frontend sends: 'files' (not 'files[]')
+#     files = request.files.getlist('files')
 #     print(f"Received files for IP: {ip}")
+#     print(f"Number of files received: {len(files)}")
+#     for idx, file in enumerate(files):
+#         print(f"File {idx}: {file.filename} ({file.content_length} bytes)")
+#
+#     if not files or files[0].filename == '':
+#         return jsonify([{'error': 'No files uploaded'}]), 400
+#
+#     # Create temp_uploads directory if it doesn't exist
+#     if not os.path.exists('temp_uploads'):
+#         os.makedirs('temp_uploads')
+#
 #     # Save uploaded files temporarily
 #     temp_files = []
-#     # for file in files:
-#     #     temp_path = os.path.join('temp_uploads', file.filename)
-#     #     file.save(temp_path)
-#     #     temp_files.append(temp_path)
-
-#     # **TEMPORARY CHANGE FOR TESTING:** Add placeholder file paths
-#     temp_files = ['temp_uploads/LAB_practice.pdf', 'temp_uploads/LAB_practice - Copy.pdf']
-#     print(f"File paths (for testing): {temp_files}")
-
-#     results = app_functions.send_files(ip, temp_files)
-
+#     for file in files:
+#         temp_path = os.path.join('temp_uploads', file.filename)
+#         file.save(temp_path)
+#         temp_files.append(temp_path)
+#     print(f"Saved files to: {temp_files}")
+#
+#     results = []
+#     # Iterate and send files one by one
+#     for temp_file in temp_files:
+#         try:
+#             # Execute sender.py as a subprocess
+#             process = subprocess.run(['python', 'sender.py', ip, temp_file], capture_output=True, text=True)
+#             results.append({
+#                 'file': os.path.basename(temp_file),
+#                 'status': 'success' if process.returncode == 0 else 'error',
+#                 'output': process.stdout.strip(),
+#                 'error': process.stderr.strip()
+#             })
+#             print(f"Sent file: {temp_file}")
+#         except Exception as e:
+#             results.append({
+#                 'file': os.path.basename(temp_file),
+#                 'status': 'error',
+#                 'error': str(e)
+#             })
+#             print(f"Error sending file {temp_file}: {e}")
+#
 #     # Cleanup temp files
-#     # for f in temp_files:
-#     #     os.remove(f)
+#     for f in temp_files:
+#         try:
+#             os.remove(f)
+#             print(f"Cleaned up: {f}")
+#         except Exception as e:
+#             print(f"Error cleaning up {f}: {e}")
+#
 #     return jsonify(results)
 
-
-@app.route('/api/send_files', methods=['POST'])
-    def api_send_files():
-        ip = request.form.get('ip')
-        files = request.files.getlist('files[]')
-        print(f"Received files for IP: {ip}")
-        
-        # Create temp_uploads directory if it doesn't exist
-        if not os.path.exists('temp_uploads'):
-            os.makedirs('temp_uploads')
-
-        # Save uploaded files temporarily
-        temp_files = []
-        for file in files:
-            temp_path = os.path.join('temp_uploads', file.filename)
-            file.save(temp_path)
-            temp_files.append(temp_path)
-        print(f"Saved files to: {temp_files}")
-
-        results = []
-        # Iterate and send files one by one
-        for temp_file in temp_files:
-            try:
-                # Execute sender.py as a subprocess
-                # You might need to adjust the command based on your environment
-                # e.g., ['python3', 'sender.py', ip, temp_file]
-                process = subprocess.run(['python', 'sender.py', ip, temp_file], capture_output=True, text=True)
-                results.append({
-                    'file': os.path.basename(temp_file),
-                    'status': 'success',
-                    'output': process.stdout.strip(),
-                    'error': process.stderr.strip()
-                })
-                print(f"Sent file: {temp_file}")
-            except Exception as e:
-                results.append({
-                    'file': os.path.basename(temp_file),
-                    'status': 'error',
-                    'error': str(e)
-                })
-                print(f"Error sending file {temp_file}: {e}")
-
-        # Cleanup temp files
-        for f in temp_files:
-            try:
-                os.remove(f)
-                print(f"Cleaned up: {f}")
-            except Exception as e:
-                print(f"Error cleaning up {f}: {e}")
-
-        return jsonify(results)
 
 
 
